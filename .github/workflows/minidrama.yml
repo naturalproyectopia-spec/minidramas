@@ -1,0 +1,36 @@
+name: Generador de Minidramas con Gemini
+
+on:
+  workflow_dispatch:
+    inputs:
+      premisa:
+        description: 'Premisa o idea principal del minidrama'
+        required: true
+        default: 'Un espejo que refleja lo que harás 10 segundos antes de hacerlo.'
+
+jobs:
+  crear-minidrama:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependencias de Google GenAI
+        run: pip install google-genai
+
+      - name: Ejecutar generación de guion con Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PREMISA_DRAMA: ${{ github.event.inputs.premisa }}
+        run: python script.py
+
+      - name: Guardar Guion como Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guion-minidrama
+          path: guion.json
